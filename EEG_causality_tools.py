@@ -720,6 +720,7 @@ def preprocess():
                                     data1=raw1.get_data()
                                     data1=np.vstack((data1,events1_data))
                                     raw1_to_save=mne.io.RawArray(data1, info1)
+                                    raw1_to_save.plot()
                                     mne.export.export_raw(fname1, raw1_to_save, fmt='auto',overwrite='True')
                                     if raw2 is not None:
                                         fname2 = fd.asksaveasfilename(title="EEG condition "+cond2_name.get(),defaultextension=".edf",filetypes=(("European Data Format (EDF)", "*.edf"),("All Files", "*.*")))
@@ -727,6 +728,7 @@ def preprocess():
                                         data2=raw2.get_data()
                                         data2=np.vstack((data2,events2_data))                                       
                                         raw2_to_save=mne.io.RawArray(data2, info2)
+                                        raw2_to_save.plot()
                                         mne.export.export_raw(fname2, raw2_to_save, fmt='auto',overwrite='True')
                                 else:
                                     fname1 = fd.asksaveasfilename(title="EEG condition "+cond1_name.get(),defaultextension=".edf",filetypes=(("European Data Format (EDF)", "*.edf"),("All Files", "*.*")))
@@ -1734,9 +1736,7 @@ def te():
     div_type=IntVar()
     div_type.set(3)
     xdiv_vals=StringVar()
-    xdiv_vals.set('-30,-10,10,30')
     ydiv_vals=StringVar()
-    ydiv_vals.set('-30,-10,10,30')
     lxp=StringVar()
     lxp.set('1')
     lxp=StringVar()
@@ -1754,6 +1754,8 @@ def te():
         Label(win,text="ERROR\nIt is required at least\n1 preprocessed data",justify=CENTER).grid(row=0,column=0,padx=10,pady=10)        
         Button(win,text="OK",command=win.destroy).grid(row=1,column=0,padx=10)
     else:
+        xdiv_vals.set(f'{np.quantile(eeg1.get_data(),0.2)*10**6:.2f}, {np.quantile(eeg1.get_data(),0.4)*10**6:.2f}, {np.quantile(eeg1.get_data(),0.6)*10**6:.2f}, {np.quantile(eeg1.get_data(),0.8)*10**6:.2f}')
+        ydiv_vals.set(f'{np.quantile(eeg1.get_data(),0.2)*10**6:.2f}, {np.quantile(eeg1.get_data(),0.4)*10**6:.2f}, {np.quantile(eeg1.get_data(),0.6)*10**6:.2f}, {np.quantile(eeg1.get_data(),0.8)*10**6:.2f}')
         n_chans=len(eeg1.ch_names)
         def step():
             if int(delay.get())>=0:
@@ -1772,8 +1774,8 @@ def te():
                     symb_type='equal-points'
                     x_divs,y_divs=None,None
                 elif div_type.get()==3:
-                    x_divs=[float(i) for i in xdiv_vals.get().split(sep=',')]
-                    y_divs=[float(i) for i in ydiv_vals.get().split(sep=',')]
+                    x_divs=[float(i)*10**-6 for i in xdiv_vals.get().split(sep=',')]
+                    y_divs=[float(i)*10**-6 for i in ydiv_vals.get().split(sep=',')]
                     symb_type=None
                 total_steps=0
                 for i in range(n_chans):
@@ -3918,9 +3920,7 @@ def te_dfc():
     div_type=IntVar()
     div_type.set(1)
     xdiv_vals=StringVar()
-    xdiv_vals.set('-30,-10,10,30')
     ydiv_vals=StringVar()
-    ydiv_vals.set('-30,-10,10,30')
     lxp=StringVar()
     lxp.set('1')
     lxp=StringVar()
@@ -3940,6 +3940,8 @@ def te_dfc():
         Label(win,text="ERROR\nIt is required at least\n1 preprocessed or raw data",justify=CENTER).grid(row=0,column=0,padx=10,pady=10)        
         Button(win,text="OK",command=win.destroy).grid(row=1,column=0,padx=10)
     else:
+        xdiv_vals.set(f'{np.quantile(eeg1.get_data(),0.2)*10**6:.2f}, {np.quantile(eeg1.get_data(),0.4)*10**6:.2f}, {np.quantile(eeg1.get_data(),0.6)*10**6:.2f}, {np.quantile(eeg1.get_data(),0.8)*10**6:.2f}')
+        ydiv_vals.set(f'{np.quantile(eeg1.get_data(),0.2)*10**6:.2f}, {np.quantile(eeg1.get_data(),0.4)*10**6:.2f}, {np.quantile(eeg1.get_data(),0.6)*10**6:.2f}, {np.quantile(eeg1.get_data(),0.8)*10**6:.2f}')
         def step():
             if (int(delay.get())>=0) and (int(wlen.get())>0) and (int(fr.get())>0):
                 error2=0
@@ -3950,8 +3952,8 @@ def te_dfc():
                     symb_type='equal-points'
                     x_divs,y_divs=None,None
                 elif div_type.get()==3:
-                    x_divs=[float(i) for i in xdiv_vals.get().split(sep=',')]
-                    y_divs=[float(i) for i in ydiv_vals.get().split(sep=',')]
+                    x_divs=[float(i)*10**-6 for i in xdiv_vals.get().split(sep=',')]
+                    y_divs=[float(i)*10**-6 for i in ydiv_vals.get().split(sep=',')]
                     symb_type=None
                 if (raw_or_epoch.get()==2) and (error==1):
                     showinfo(title="Error",message="To work with epochs it is\nnecessary to have at\nleast 1 preprocessed data")
@@ -4312,9 +4314,7 @@ def mi_dfc():
     div_type=IntVar()
     div_type.set(1)
     xdiv_vals=StringVar()
-    xdiv_vals.set('-30,-10,10,30')
     ydiv_vals=StringVar()
-    ydiv_vals.set('-30,-10,10,30')
     lxp=StringVar()
     lxp.set('1')
     lxp=StringVar()
@@ -4332,6 +4332,8 @@ def mi_dfc():
         Label(win,text="ERROR\nIt is required at least\n1 preprocessed or raw data",justify=CENTER).grid(row=0,column=0,padx=10,pady=10)        
         Button(win,text="OK",command=win.destroy).grid(row=1,column=0,padx=10)
     else:
+        xdiv_vals.set(f'{np.quantile(eeg1.get_data(),0.2)*10**6:.2f}, {np.quantile(eeg1.get_data(),0.4)*10**6:.2f}, {np.quantile(eeg1.get_data(),0.6)*10**6:.2f}, {np.quantile(eeg1.get_data(),0.8)*10**6:.2f}')
+        ydiv_vals.set(f'{np.quantile(eeg1.get_data(),0.2)*10**6:.2f}, {np.quantile(eeg1.get_data(),0.4)*10**6:.2f}, {np.quantile(eeg1.get_data(),0.6)*10**6:.2f}, {np.quantile(eeg1.get_data(),0.8)*10**6:.2f}')
         def step():
             if (int(delay.get())>=0) and (int(wlen.get())>0) and (int(fr.get())>0):
                 error2=0
@@ -4342,8 +4344,8 @@ def mi_dfc():
                     symb_type='equal-points'
                     x_divs,y_divs=None,None
                 elif div_type.get()==3:
-                    x_divs=[float(i) for i in xdiv_vals.get().split(sep=',')]
-                    y_divs=[float(i) for i in ydiv_vals.get().split(sep=',')]
+                    x_divs=[float(i)*10**-6 for i in xdiv_vals.get().split(sep=',')]
+                    y_divs=[float(i)*10**-6 for i in ydiv_vals.get().split(sep=',')]
                     symb_type=None
                 if (raw_or_epoch.get()==2) and (error==1):
                     showinfo(title="Error",message="To work with epochs it is\nnecessary to have at\nleast 1 preprocessed data")
