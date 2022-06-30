@@ -303,7 +303,7 @@ def load_montage():
                         sel_correspondence[i].set('Not connected')
                 stim_chan=StringVar()
                 for j in range(len(raw1.ch_names)):
-                    if ("DC03" in raw1.ch_names[j]) or ("DC3" in raw1.ch_names[j]):
+                    if ("DC03" in raw1.ch_names[j]) or ("DC3" in raw1.ch_names[j]) or ("Event" in raw1.ch_names[j]):
                         stim_chan.set(raw1.ch_names[j])
                 def onFrameConfigure(canvas):
                     canvas.configure(scrollregion=canvas.bbox("all"))
@@ -720,7 +720,6 @@ def preprocess():
                                     data1=raw1.get_data()
                                     data1=np.vstack((data1,events1_data))
                                     raw1_to_save=mne.io.RawArray(data1, info1)
-                                    raw1_to_save.plot()
                                     mne.export.export_raw(fname1, raw1_to_save, fmt='auto',overwrite='True')
                                     if raw2 is not None:
                                         fname2 = fd.asksaveasfilename(title="EEG condition "+cond2_name.get(),defaultextension=".edf",filetypes=(("European Data Format (EDF)", "*.edf"),("All Files", "*.*")))
@@ -728,7 +727,6 @@ def preprocess():
                                         data2=raw2.get_data()
                                         data2=np.vstack((data2,events2_data))                                       
                                         raw2_to_save=mne.io.RawArray(data2, info2)
-                                        raw2_to_save.plot()
                                         mne.export.export_raw(fname2, raw2_to_save, fmt='auto',overwrite='True')
                                 else:
                                     fname1 = fd.asksaveasfilename(title="EEG condition "+cond1_name.get(),defaultextension=".edf",filetypes=(("European Data Format (EDF)", "*.edf"),("All Files", "*.*")))
@@ -820,11 +818,12 @@ def preprocess():
                                                         global epoched_raw1
                                                         global epoched_raw2
                                                         global epochs_delete
-                                                        to_remove=epochs_delete.get().replace(" ","").split(',')
-                                                        to_remove=[int(i) for i in to_remove]
-                                                        to_stay=list(range(len(epoched_raw1)))
-                                                        to_stay=[i for i in to_stay if i not in to_remove]
-                                                        epoched_raw1=epoched_raw1[to_stay]
+                                                        if len(epochs_delete.get())>0:
+                                                            to_remove=epochs_delete.get().replace(" ","").split(',')
+                                                            to_remove=[int(i) for i in to_remove]
+                                                            to_stay=list(range(len(epoched_raw1)))
+                                                            to_stay=[i for i in to_stay if i not in to_remove]
+                                                            epoched_raw1=epoched_raw1[to_stay]
                                                         eeg1=epoched_raw1
                                                         win11.destroy()
                                                         if raw2 is not None:
@@ -845,11 +844,12 @@ def preprocess():
                                                                 global eeg2
                                                                 global epoched_raw2
                                                                 global epochs_delete
-                                                                to_remove=epochs_delete.get().replace(" ","").split(',')
-                                                                to_remove=[int(i) for i in to_remove]
-                                                                to_stay=list(range(len(epoched_raw2)))
-                                                                to_stay=[i for i in to_stay if i not in to_remove]
-                                                                epoched_raw2=epoched_raw2[to_stay]
+                                                                if len(epochs_delete.get())>0:
+                                                                    to_remove=epochs_delete.get().replace(" ","").split(',')
+                                                                    to_remove=[int(i) for i in to_remove]
+                                                                    to_stay=list(range(len(epoched_raw2)))
+                                                                    to_stay=[i for i in to_stay if i not in to_remove]
+                                                                    epoched_raw2=epoched_raw2[to_stay]
                                                                 eeg2=epoched_raw2
                                                                 shutil.rmtree("epochs_inspect_cond2")
                                                                 win12.destroy()
@@ -2083,9 +2083,9 @@ def te():
         Radiobutton(win,text="equal-sized divisions",variable=div_type,value=1).grid(row=3,column=1,sticky=W)
         Radiobutton(win,text="divisions with same number of points",variable=div_type,value=2).grid(row=4,column=1,columnspan=4,sticky=W)
         Radiobutton(win,text="other (separate with commas):",variable=div_type,value=3).grid(row=5,column=1,sticky=W)
-        Label(win,text=" X divisions:").grid(row=5,column=2,sticky=W)
+        Label(win,text=u" X divisions (\u03bcV):").grid(row=5,column=2,sticky=W)
         Entry(win,textvariable=xdiv_vals,width=20).grid(row=5,column=3,sticky=W)
-        Label(win,text=" Y divisions:").grid(row=6,column=2,sticky=W)
+        Label(win,text=u" Y divisions (\u03bcV):").grid(row=6,column=2,sticky=W)
         Entry(win,textvariable=ydiv_vals,width=20).grid(row=6,column=3,sticky=W)
         Label(win,text="Symbolic length:").grid(row=7,column=0,sticky=W,padx=10)
         Label(win,text="Past of X:").grid(row=7,column=1,sticky=W)
@@ -2470,9 +2470,9 @@ def mi():
         Radiobutton(win,text="equal-sized divisions",variable=div_type,value=1).grid(row=3,column=1,sticky=W)
         Radiobutton(win,text="divisions with same number of points",variable=div_type,value=2).grid(row=4,column=1,columnspan=4,sticky=W)
         Radiobutton(win,text="other (separate with commas):",variable=div_type,value=3).grid(row=5,column=1,sticky=W)
-        Label(win,text=" X divisions:").grid(row=5,column=2,sticky=W)
+        Label(win,text=u" X divisions (\u03bcV):").grid(row=5,column=2,sticky=W)
         Entry(win,textvariable=xdiv_vals,width=20).grid(row=5,column=3,sticky=W)
-        Label(win,text=" Y divisions:").grid(row=6,column=2,sticky=W)
+        Label(win,text=u" Y divisions (\u03bcV):").grid(row=6,column=2,sticky=W)
         Entry(win,textvariable=ydiv_vals,width=20).grid(row=6,column=3,sticky=W)
         Label(win,text="Symbolic length:").grid(row=7,column=0,sticky=W,padx=10)
         Label(win,text="X:").grid(row=7,column=1,sticky=W)
@@ -4265,9 +4265,9 @@ def te_dfc():
         Radiobutton(win,text="equal-sized divisions",variable=div_type,value=1).grid(row=7,column=1,sticky=W)
         Radiobutton(win,text="divisions with same number of points",variable=div_type,value=2).grid(row=8,column=1,columnspan=4,sticky=W)
         Radiobutton(win,text="other (separate with commas):",variable=div_type,value=3).grid(row=9,column=1,sticky=W)
-        Label(win,text=" X divisions:").grid(row=9,column=2,sticky=W)
+        Label(win,text=u" X divisions (\u03bcV):").grid(row=9,column=2,sticky=W)
         Entry(win,textvariable=xdiv_vals,width=20).grid(row=9,column=3,sticky=W)
-        Label(win,text=" Y divisions:").grid(row=10,column=2,sticky=W)
+        Label(win,text=u" Y divisions (\u03bcV):").grid(row=10,column=2,sticky=W)
         Entry(win,textvariable=ydiv_vals,width=20).grid(row=10,column=3,sticky=W)
         Label(win,text="Symbolic length:").grid(row=11,column=0,sticky=W,padx=10)
         Label(win,text="Past of X:").grid(row=11,column=1,sticky=W)
@@ -4657,9 +4657,9 @@ def mi_dfc():
         Radiobutton(win,text="equal-sized divisions",variable=div_type,value=1).grid(row=7,column=1,sticky=W)
         Radiobutton(win,text="divisions with same number of points",variable=div_type,value=2).grid(row=8,column=1,columnspan=4,sticky=W)
         Radiobutton(win,text="other (separate with commas):",variable=div_type,value=3).grid(row=9,column=1,sticky=W)
-        Label(win,text=" X divisions:").grid(row=9,column=2,sticky=W)
+        Label(win,text=u" X divisions (\u03bcV):").grid(row=9,column=2,sticky=W)
         Entry(win,textvariable=xdiv_vals,width=20).grid(row=9,column=3,sticky=W)
-        Label(win,text=" Y divisions:").grid(row=10,column=2,sticky=W)
+        Label(win,text=u" Y divisions (\u03bcV):").grid(row=10,column=2,sticky=W)
         Entry(win,textvariable=ydiv_vals,width=20).grid(row=10,column=3,sticky=W)
         Label(win,text="Symbolic length:").grid(row=11,column=0,sticky=W,padx=10)
         Label(win,text="for X:").grid(row=11,column=1,sticky=W)
